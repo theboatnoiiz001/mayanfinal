@@ -24,10 +24,56 @@
 
 {% block stylesheets %}{% endblock %}
 
+<link href="https://fonts.googleapis.com/css?family={% get_font_link %}" rel="stylesheet">
 <style>
-    {% appearance_get_user_theme_stylesheet user=request.user %}
-</style>
+         
+        body {
+			font-family: "{% get_fontraw %}", sans-serif;
+		}
 
+        .navbar-brand{
+            font-family: "{% get_fontraw %}", sans-serif;
+        }
+
+        h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+            font-family: "{% get_fontraw %}", sans-serif;
+        }
+
+        @media (min-width: 768px) {
+            .navbar-brand {
+                text-align: left;
+                width: 700px;
+            }
+        }
+        .navbar-default .navbar-nav>.open>a,.navbar-default .navbar-nav>.open>a:hover,.navbar-default .navbar-nav>.open>a:focus {
+            background-color: {% color_background_nav %};
+        }
+</style>
+<script>
+    data = "{% appearance_get_user_theme_script %}";
+    listData = data.split("|")
+    $("#text-braner").text(listData[0])
+    if(listData[1]){
+        $("#dataNavbar").html('<a class="navbar-brand" href="http://127.0.0.1:8000/#/home/" style="color:'+listData[2]+';"><div class="row"> <img src="'+listData[1]+'" style="margin-left:50px;margin-top: -8px;margin-right: 10px;" width="40" height="40" alt=""> '+listData[0]+'</div></a>')
+    }else{
+        $("#dataNavbar").html('<a class="navbar-brand" href="http://127.0.0.1:8000/#/home/" style="color:'+listData[2]+';margin-left:20px;"><div class="row"> '+listData[0]+'</div></a>')
+    }
+    $("#headerTopMenu").css("background-color", listData[3]);
+    $("#accordion-sidebar .panel-heading").css("background-color", listData[4]);
+    $("#menu-main").css("background-color", listData[4]);
+    $(".navbar-default .navbar-nav>li>a").css("color", listData[2]);
+    $(".panel-primary>.panel-heading").css("background-color", listData[5]);
+    $(".navbar-default .navbar-nav>.open>a").css("background-color", listData[3]);
+    $("body").css("background-color", listData[6]);
+    $("#accordion-sidebar .panel-body").css("background-color", listData[7]);
+
+    //button zone
+    $(".btn-primary").css("background-color", listData[8]);
+    $(".btn-danger").css("background-color", listData[9]);
+    $(".btn-success").css("background-color", listData[10]);
+    $(".btn-default").css("background-color", listData[11]);
+    
+</script>
 {% if appearance_type == 'plain' %}
     {% block content_plain %}{% endblock %}
 {% else %}

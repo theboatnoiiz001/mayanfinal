@@ -6,12 +6,19 @@ from django.urls import reverse
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
+from colorful.fields import RGBColorField
+
 from mayan.apps.databases.model_mixins import ExtraDataModelMixin
 from mayan.apps.events.classes import EventManagerSave
 from mayan.apps.events.decorators import method_event
 
 from .events import event_theme_created, event_theme_edited
 
+FONT_CHOICES = (
+    ('Kanit','Kanit font'),
+    ('Roboto', 'Roboto font'),
+    ('Prompt','Prompt font'),
+)
 
 class Theme(ExtraDataModelMixin, models.Model):
     label = models.CharField(
@@ -31,6 +38,78 @@ class Theme(ExtraDataModelMixin, models.Model):
             'Set text Brand.'
         ),
         verbose_name=_('Brand name')
+    )
+    logo_path = models.CharField(
+        blank=True,
+        max_length=300,
+        help_text=_(
+            'Link image logo.'
+        ),
+        verbose_name=_('Link logo')
+    )
+    font = models.CharField(
+        max_length=100,
+        blank=True,
+        choices=FONT_CHOICES,
+        verbose_name=_('Font')
+    )
+    color_font_header = RGBColorField(
+        blank=True,
+        help_text=_('Color font header.'),
+        verbose_name=_('Color font header')
+    )
+    background_color_header = RGBColorField(
+        blank=True,
+        help_text=_('Color background header.'),
+        verbose_name=_('Color background header')
+    )
+    background_color_menu = RGBColorField(
+        blank=True,
+        help_text=_('Color background menu.'),
+        verbose_name=_('Color background menu')
+    )
+    background_color_header_panel = RGBColorField(
+        blank=True,
+        help_text=_('Color background header panel.'),
+        verbose_name=_('Color background header panel')
+    )
+    background_website = RGBColorField(
+        blank=True,
+        help_text=_('Color background website.'),
+        verbose_name=_('Color background website')
+    )
+    font_other = models.CharField(
+        blank=True,
+        max_length=300,
+        help_text=_(
+            'Name font from Google Font.'
+        ),
+        verbose_name=_('Font other')
+    )
+    background_menu_dropdown = RGBColorField(
+        blank=True,
+        help_text=_('Color background dropdown menu.'),
+        verbose_name=_('Color background dropdown menu')
+    )
+    btn_color_primary = RGBColorField(
+        blank=True,
+        help_text=_('Color primary button.'),
+        verbose_name=_('Color primary button')
+    )
+    btn_color_danger = RGBColorField(
+        blank=True,
+        help_text=_('Color danger button.'),
+        verbose_name=_('Color danger button')
+    )
+    btn_color_success = RGBColorField(
+        blank=True,
+        help_text=_('Color success button.'),
+        verbose_name=_('Color success button')
+    )
+    btn_color_default = RGBColorField(
+        blank=True,
+        help_text=_('Color default button.'),
+        verbose_name=_('Color default button')
     )
 
     class Meta:

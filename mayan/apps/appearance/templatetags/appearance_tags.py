@@ -7,6 +7,7 @@ from django.template.loader import get_template
 from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
+from mayan.apps.appearance.models import Theme
 
 from ..literals import COMMENT_APP_TEMPLATE_CACHE_DISABLE
 
@@ -87,6 +88,40 @@ def appearance_get_user_theme_stylesheet(user):
 
     return ''
 
+@register.simple_tag
+def appearance_get_user_theme_script():
+    obj = Theme.objects.get(pk=1)
+    context = obj.brand_name +  "|" + obj.logo_path + "|" + obj.color_font_header + "|" + obj.background_color_header + "|" + obj.background_color_menu + "|" + obj.background_color_header_panel + "|" + obj.background_website + "|" + obj.background_menu_dropdown + "|" + obj.btn_color_primary + "|" + obj.btn_color_danger + "|" + obj.btn_color_success + "|" + obj.btn_color_default
+    return context
+
+@register.simple_tag
+def color_background_nav():
+    obj = Theme.objects.get(pk=1)
+    context = obj.background_color_header
+    return context
+
+@register.simple_tag
+def get_fontraw():
+    obj = Theme.objects.get(pk=1)
+    if obj.font_other:
+        fontname = obj.font_other
+    else:
+        fontname = obj.font
+    
+    context = fontname
+    return context
+
+@register.simple_tag
+def get_font_link():
+    obj = Theme.objects.get(pk=1)
+    if obj.font_other:
+        fontname = obj.font_other
+    else:
+        fontname = obj.font
+    
+    fontRaw = fontname
+    fontLink = fontRaw.replace(" ", "+")
+    return fontLink
 
 @register.simple_tag
 def appearance_icon_render(icon, enable_shadow=False):
