@@ -24,6 +24,14 @@ class Theme(ExtraDataModelMixin, models.Model):
             'user interface elements.'
         ), verbose_name=_('Stylesheet')
     )
+    brand_name = models.CharField(
+        blank=True,
+        max_length=100,
+        help_text=_(
+            'Set text Brand.'
+        ),
+        verbose_name=_('Brand name')
+    )
 
     class Meta:
         ordering = ('label',)
