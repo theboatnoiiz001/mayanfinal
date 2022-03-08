@@ -52,6 +52,7 @@
 <script>
     data = "{% appearance_get_user_theme_script %}";
     listData = data.split("|")
+    console.log(listData)
     $("#text-braner").text(listData[0])
     if(listData[1]){
         $("#dataNavbar").html('<a class="navbar-brand" href="http://127.0.0.1:8000/#/home/" style="color:'+listData[2]+';"><div class="row"> <img src="'+listData[1]+'" style="margin-left:50px;margin-top: -8px;margin-right: 10px;" width="40" height="40" alt=""> '+listData[0]+'</div></a>')
@@ -72,7 +73,119 @@
     $(".btn-danger").css("background-color", listData[9]);
     $(".btn-success").css("background-color", listData[10]);
     $(".btn-default").css("background-color", listData[11]);
-    
+
+    //FontSize 
+    $(".navbar-brand").css("fontSize",  listData[12]+"px");
+    $("#accordion-sidebar .panel-title").css("fontSize",  listData[13]+"px");
+    $("#content-title").css("fontSize",  listData[14]+"px");
+
+</script>
+<script>
+    function getElementByXpath(path) {
+        return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    }
+    function loadImageFileAsURL(){
+          var filesSelected = document.getElementById("inputFileToLoad").files;
+          if (filesSelected.length > 0)
+          {
+              var fileToLoad = filesSelected[0];
+      
+              var fileReader = new FileReader();
+      
+              fileReader.onload = function(fileLoadedEvent) 
+              {
+                  resize(fileLoadedEvent.target.result);
+              };
+      
+              fileReader.readAsDataURL(fileToLoad);
+      
+          }
+      }
+      
+    function resize(file){
+          var image = new Image();
+          image.src = file;
+          var canvas = document.createElement("canvas");
+          var ctx = canvas.getContext("2d");
+          canvas.width = 50; // target width
+          canvas.height = 50; // target height
+          image.onload = function(e) {
+              ctx.drawImage(image, 
+                  0, 0, image.width, image.height, 
+                  0, 0, canvas.width, canvas.height
+              );
+              // create a new base64 encoding
+              var resampledImage = new Image();
+              $("#id_logo_path").val(canvas.toDataURL())
+              if($("#id_logo_path").val() != ""){
+                toastr.success('Uploads Image success.', {timeOut: 1000})
+                $("#clearLogo").show();
+              }else{
+                toastr.error('Uploads Error.',{timeOut: 1000})
+              }
+              checkLogo()
+          };
+    }
+    function clearPathLogo(){
+        $("#id_logo_path").val("")
+        $("#clearLogo").hide();
+        imgLogo = document.getElementById("logoimg").src = "";
+    }
+    function createBr(){
+        var br = document.createElement("br");
+        getElementByXpath('//*[@id="viewport"]/div[5]/form/div[3]').appendChild(br)
+    }
+    function checkLogo(){
+        filePath = $("#id_logo_path").val();
+        if(filePath != ""){
+            imgLogo = document.getElementById("logoimg");
+            imgLogo.src = filePath;
+        }
+    }
+    function checkButtonClear(){
+        filePath = $("#id_logo_path").val();
+        var buttonclear = document.createElement("a");
+        buttonclear.className = "btn btn-danger btn-sm";
+        buttonclear.text = "Clear Logo";
+        buttonclear.id = "clearLogo"
+        buttonclear.style.cssText = "display:none;";
+        buttonclear.onclick = function () {
+            clearPathLogo();
+        };
+        getElementByXpath('//*[@id="viewport"]/div[5]/form/div[3]').appendChild(buttonclear)
+
+        if(filePath != ""){
+            $("#clearLogo").show();
+        }
+    }
+    function createUploads(){
+        var input = document.createElement("input");
+        input.type = "file";
+        input.className = "form-control"
+        input.id = "inputFileToLoad"
+        input.accept = "image/*"
+        input.onchange = function () {
+            loadImageFileAsURL();
+        };
+        getElementByXpath('//*[@id="viewport"]/div[5]/form/div[3]').appendChild(input)
+        $("#id_logo_path").hide();
+    }
+    function createImgLogo(){
+        var imgLogo = document.createElement("img");
+        imgLogo.id = "logoimg"
+        getElementByXpath('//*[@id="viewport"]/div[5]/form/div[3]').appendChild(imgLogo)
+    }
+    $( document ).ready(function() {
+        if((window.location.href.search("themes") != -1) && (window.location.href.search("edit") != -1)){
+            createUploads()
+            createBr()
+            createImgLogo()
+            checkLogo()
+            createBr()
+            createBr()
+            checkButtonClear()
+        }
+    });
 </script>
 {% if appearance_type == 'plain' %}
     {% block content_plain %}{% endblock %}

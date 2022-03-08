@@ -39,13 +39,9 @@ class Theme(ExtraDataModelMixin, models.Model):
         ),
         verbose_name=_('Brand name')
     )
-    logo_path = models.CharField(
+    logo_path = models.TextField(
         blank=True,
-        max_length=300,
-        help_text=_(
-            'Link image logo.'
-        ),
-        verbose_name=_('Link logo')
+        verbose_name=_('Path logo')
     )
     font = models.CharField(
         max_length=100,
@@ -110,6 +106,27 @@ class Theme(ExtraDataModelMixin, models.Model):
         blank=True,
         help_text=_('Color default button.'),
         verbose_name=_('Color default button')
+    )
+    font_size_header = models.IntegerField(
+        default=19,
+        help_text=_(
+            'Font size header brand.'
+        ),
+        verbose_name=_('Font size brand')
+    )
+    font_size_menu = models.IntegerField(
+        default=15,
+        help_text=_(
+            'Font size menu.'
+        ),
+        verbose_name=_('Font size menu')
+    )
+    font_size_content_title = models.IntegerField(
+        default=23,
+        help_text=_(
+            'Font size content title.'
+        ),
+        verbose_name=_('Font size content title')
     )
 
     class Meta:
