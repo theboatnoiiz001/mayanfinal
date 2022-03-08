@@ -128,6 +128,13 @@ class Theme(ExtraDataModelMixin, models.Model):
         ),
         verbose_name=_('Font size content title')
     )
+    menu_text_color = RGBColorField(
+        blank=True,
+        help_text=_('Menu text color.'),
+        verbose_name=_('Menu text color')
+    )
+    
+
 
     class Meta:
         ordering = ('label',)

@@ -7,7 +7,7 @@ from .models import Theme, UserThemeSetting
 
 class ThemeForm(forms.ModelForm):
     class Meta:
-        fields = ('label','brand_name','logo_path','font','font_other','color_font_header','background_color_header','background_color_menu','background_menu_dropdown','background_website','background_color_header_panel','btn_color_primary','btn_color_danger','btn_color_success','btn_color_default','font_size_header','font_size_menu','font_size_content_title')
+        fields = ('label','brand_name','logo_path','font','font_other','color_font_header','background_color_header','background_color_menu','menu_text_color','background_menu_dropdown','background_website','background_color_header_panel','btn_color_primary','btn_color_danger','btn_color_success','btn_color_default','font_size_header','font_size_menu','font_size_content_title')
         model = Theme
 
 
