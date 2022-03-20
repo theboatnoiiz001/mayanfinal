@@ -8,7 +8,6 @@
 {% load templating_tags %}
 
 {% spaceless %}
-
 <script>
     if (typeof partialNavigation === 'undefined') {
         /* Check if the template was not loaded via AJAX
@@ -129,6 +128,7 @@
               checkLogo()
           };
     }
+    
     function clearPathLogo(){
         $("#id_logo_path").val("")
         $("#clearLogo").hide();
@@ -178,8 +178,357 @@
         imgLogo.id = "logoimg"
         getElementByXpath('//*[@id="viewport"]/div[5]/form/div[3]').appendChild(imgLogo)
     }
+    function createinputFile(){
+        $("#id_stylesheet").hide();
+        $("#id_javascript_data").hide();
+        getElementByXpath('//*[@id="viewport"]/div[5]/form/div[5]/label').style.display = "none";
+        getElementByXpath('//*[@id="viewport"]/div[5]/form/div[6]/label').innerHTML = "Upload Theme";
+    
+    
+        var input = document.createElement("dev");
+        input.id = "formStylesheet";
+        getElementByXpath('//*[@id="viewport"]/div[5]/form/div[6]').appendChild(input);
+    
+        $("#formStylesheet").html(`<div class="panel panel-default">
+          <div class="panel-body">
+            <div class="mb-3">
+                <label for="xmlfile" class="form-label">Upload Theme file</label>
+                <input class="form-control" type="file" onchange="inputXML()" id="xmlfile">
+                <b style="margin-right:10px;margin-left:10px;">Type Theme: </b>
+                  <input type="radio" id="jl" style="margin-left:15px;" name="typexml" value="Joomla">
+                  <label for="jl">XML Joomla</label> 
+                  <input type="radio" id="wdp" style="margin-left:15px;" name="typexml" value="Json">
+                  <label for="wdp">JSON Mayan</label> 
+                  <input type="radio" id="ot" style="margin-left:15px;" name="typexml" value="xmlmayan" checked>
+                  <label for="ot">XML Mayan</label> 
+                <br>
+                <br>
+                <label for="cssfile" class="form-label">Upload CSS file</label>
+                <input class="form-control" type="file" onchange="inputCSS()" id="cssfile">
+                <a class="btn btn-warning" style="margin-top:5px;" id="clearCSSFile" onClick="clearCss()" style="display:none;"><i class="fa fa-trash" aria-hidden="true"></i> Clear CSS file</a>
+                <br><br>
+                <label for="jsfile" class="form-label">Upload Javascript file</label>
+                <input class="form-control" type="file" onchange="inputJS()" id="jsfile">
+                <a class="btn btn-warning" style="margin-top:5px;" id="clearJSFile" onClick="clearjs()" style="display:none;"><i class="fa fa-trash" aria-hidden="true"></i> Clear JS file</a>
+                <br><br>
+            </div>
+          </div>
+        </div>`);
+    }
+    function inputXML(){
+        let typeXML = document.querySelector('input[name="typexml"]:checked').value;
+        if(typeXML == "Joomla"){
+            joomlaInputXML()
+            checkLogo()
+        }else if(typeXML == "Json"){
+            let file = document.querySelector('#xmlfile');
+            if (!file.value.length) return;
+            var reader = new FileReader();
+            var jsonObj;
+            reader.readAsText(file.files[0]);
+            reader.onload = function(event) {
+            jsonObj = JSON.parse(event.target.result);
+                for (const [key, value] of Object.entries(jsonObj)) {
+                    console.log(key, value);
+                    $("#"+key).val(value)
+                }
+                checkLogo()
+            }
+        }else{
+            setFormXMLmayan();
+            checkLogo()
+        }
+    
+    }
+    
+    function inputCSS(){
+        let file = document.querySelector('#cssfile');
+        if (!file.value.length) return;
+        var reader = new FileReader();
+        reader.readAsText(file.files[0]);
+        reader.onload = function(event) {
+            $("#id_stylesheet").val(event.target.result);
+            checkEmptyVal()
+            toastr.success('Uploads CSS file success.', {timeOut: 1000})
+        }
+    }
+    
+    function inputJS(){
+        let file = document.querySelector('#jsfile');
+        if (!file.value.length) return;
+        var reader = new FileReader();
+        reader.readAsText(file.files[0]);
+        reader.onload = function(event) {
+            $("#id_javascript_data").val(event.target.result);
+            checkEmptyVal()
+            toastr.success('Uploads JS file success.', {timeOut: 1000})
+        }
+    }
+    
+    function checkEmptyVal(){
+        if($("#id_javascript_data").val() != ""){
+            $("#clearJSFile").show();
+        }else{
+            $("#clearJSFile").hide();
+        }
+        
+        if($("#id_stylesheet").val() != ""){
+            $("#clearCSSFile").show();
+        }else{
+            $("#clearCSSFile").hide();
+        }
+    }
+    
+    function clearCss(){
+        $("#id_stylesheet").val("");
+        toastr.success('Clear CSS file success.', {timeOut: 1000})
+        checkEmptyVal();
+    }
+    
+    function clearjs(){
+        $("#id_javascript_data").val("");
+        toastr.success('Clear JS file success.', {timeOut: 1000})
+        checkEmptyVal();
+    }
+    
+    function joomlaInputXML(){
+        let file = document.querySelector('#xmlfile');
+        if (!file.value.length) return;
+        var reader = new FileReader();
+        reader.readAsText(file.files[0]);
+        reader.onload = function(event) {
+            let datafile = event.target.result;
+            changeColor(getDataColor(datafile,"body_font"),"id_font_other");
+            changeColor(getDataColor(datafile,"header_bg_color"),"id_background_color_header");
+            changeColor(getDataColor(datafile,"logo_text_color"),"id_color_font_header");
+            changeColor(getDataColor(datafile,"menu_text_color"),"id_menu_text_color");
+            changeColor(getDataColor(datafile,"menu_dropdown_bg_color"),"id_background_menu_dropdown");
+            changeColor(getDataColor(datafile,"menu_dropdown_bg_color"),"id_background_color_menu");
+            changeColor(getDataColor(datafile,"bg_color"),"id_background_website");
+            changeColor(getDataColor(datafile,"header_bg_color"),"id_background_color_header_panel");
+        }
+    }
+    
+    function changeColor(data,ele){
+        if(data != -1){
+            $("#" + ele).val(data);
+        }
+    }
+    
+    function getDataColor(dataFile,data){
+        let checkData = dataFile.search(data);
+        if(checkData == -1){
+            return -1
+        }
+        
+        if(data == "body_font"){
+            let data1 = dataFile.split('<field name="body_font"');
+            let data2 = data1[1].split('/>');
+            let data3 = data2[0].split('{"fontFamily":"');
+            let data4 = data3[1].split('"');
+            let fontname = data4[0];
+            return fontname;
+        }else if(data == "header_bg_color"){
+            let data1 = dataFile.split('<color name="header_bg_color"');
+            let data2 = data1[1].split('/>');
+            let data3 = data2[0].split('value="');
+            let data4 = data3[1].split('"');
+            let color = data4[0];
+            return color;
+        }else if(data == "logo_text_color"){
+            let data1 = dataFile.split('<color name="logo_text_color"');
+            let data2 = data1[1].split('/>');
+            let data3 = data2[0].split('value="');
+            let data4 = data3[1].split('"');
+            let color = data4[0];
+            return color;
+        }else if(data == "menu_text_color"){
+            let data1 = dataFile.split('<color name="menu_text_color"');
+            let data2 = data1[1].split('/>');
+            let data3 = data2[0].split('value="');
+            let data4 = data3[1].split('"');
+            let color = data4[0];
+            return color;
+        }else if(data == "menu_dropdown_bg_color"){
+            let data1 = dataFile.split('<color name="menu_dropdown_bg_color"');
+            let data2 = data1[1].split('/>');
+            let data3 = data2[0].split('value="');
+            let data4 = data3[1].split('"');
+            let color = data4[0];
+            return color;
+        }else if(data == "bg_color"){
+            let data1 = dataFile.split('<color name="bg_color"');
+            let data2 = data1[1].split('/>');
+            let data3 = data2[0].split('value="');
+            let data4 = data3[1].split('"');
+            let color = data4[0];
+            return color;
+        }
+    }
+    
+    function setFormXMLmayan() {
+        let file = document.querySelector('#xmlfile');
+        if (!file.value.length) return;
+        var reader = new FileReader();
+        var data = {
+                    "label": "id_label",
+                    "brand": "id_brand_name",
+                    "pathLogo": "id_logo_path",
+                    "javascript": "id_javascript_data",
+                    "Stylesheet": "id_stylesheet",
+                    "font": "id_font_other",
+                    "colorFontHeader": "id_color_font_header",
+                    "colorbgHeader": "id_background_color_header",
+                    "colormenu": "id_background_color_menu",
+                    "colormenuText": "id_menu_text_color",
+                    "colorbgdropdownmenu": "id_background_menu_dropdown",
+                    "colorbgwebsite": "id_background_website",
+                    "colorheaderpanel": "id_background_color_header_panel",
+                    "danger": "id_btn_color_danger",
+                    "success": "id_btn_color_success",
+                    "default": "id_btn_color_default",
+                    "primary": "id_btn_color_primary",
+                    "fontSizebrand": "id_font_size_header",
+                    "fontSizeMenu": "id_font_size_menu",
+                    "fontSizeContentTitle": "id_font_size_content_title",
+        };
+        console.log(data['Stylesheet'])
+        reader.readAsText(file.files[0]);
+        reader.onload = function(event) {
+            parser = new DOMParser();
+            xmlDoc = parser.parseFromString(event.target.result,"text/xml");
+            for (const [key, value] of Object.entries(data)) {
+                try {
+                    $("#" + value).val(xmlDoc.getElementsByTagName(key)[0].childNodes[0].nodeValue);
+                }
+                catch(err) {
+                    console.log("Not found: " + key)
+                    console.log(err)
+                }
+            }
+            checkLogo()
+        }
+    
+    }
+
+    function saveDataForm(){
+        let themename = $("#id_label").val();
+        let brandName = $("#id_brand_name").val();
+        let logoPath = $("#id_logo_path").val();
+        let font = $("#id_font").val();
+        let font_other = $("#id_font_other").val();
+        let color_font_header = $("#id_color_font_header").val();
+        let color_background_header = $("#id_background_color_header").val();
+        let color_background_menu = $("#id_background_color_menu").val();
+        let menu_text_color = $("#id_menu_text_color").val();
+        let color_background_dropdown = $("#id_background_menu_dropdown").val();
+        let color_background_website = $("#id_background_website").val();
+        let color_background_header_panel = $("#id_background_color_header_panel").val();
+        let color_danger_button = $("#id_btn_color_danger").val();
+        let color_success_button = $("#id_btn_color_success").val();
+        let color_default_button = $("#id_btn_color_default").val();
+        let color_primary_button = $("#id_btn_color_primary").val();
+        let font_size_brand = $("#id_font_size_header").val();
+        let font_size_menu = $("#id_font_size_menu").val();
+        let font_size_content_title = $("#id_font_size_content_title").val();
+        
+        var data = {
+            id_label:themename,
+            id_brand_name:brandName,
+            id_logo_path:logoPath,
+            id_font:font,
+            id_font_other:font_other,
+            id_color_font_header:color_font_header,
+            id_background_color_header:color_background_header,
+            id_background_color_menu:color_background_menu,
+            id_menu_text_color:menu_text_color,
+            id_background_menu_dropdown:color_background_dropdown,
+            id_background_website:color_background_website,
+            id_background_color_header_panel:color_background_header_panel,
+            id_btn_color_danger:color_danger_button,
+            id_btn_color_success:color_success_button,
+            id_btn_color_default:color_default_button,
+            id_btn_color_primary:color_primary_button,
+            id_font_size_header:font_size_brand,
+            id_font_size_menu:font_size_menu,
+            id_font_size_content_title:font_size_content_title
+        },fileName = themename+".json";
+        saveFile(data,fileName);
+    }
+    
+    function saveFile(data,fileName){
+        var saveData = (function () {
+        var a = document.createElement("a");
+        // document.body.appendChild(a);
+        // a.style = "display: none";
+        return function (data, fileName) {
+            var json = JSON.stringify(data),
+                blob = new Blob([json], {type: "octet/stream"}),
+                url = window.URL.createObjectURL(blob);
+            a.href = url;
+            a.download = fileName;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        };
+        }());
+    
+        var data = data;
+    
+        saveData(data, fileName);
+    }
+    
+    function setForm() {
+        let file = document.querySelector('#changeTheme');
+        if (!file.value.length) return;
+        var reader = new FileReader();
+        var jsonObj;
+        reader.readAsText(file.files[0]);
+        reader.onload = function(event) {
+        jsonObj = JSON.parse(event.target.result);
+            for (const [key, value] of Object.entries(jsonObj)) {
+                console.log(key, value);
+                $("#"+key).val(value)
+            }
+            checkLogo()
+            if(validateTerms()){
+                $('[name="submit"]').click()
+            }
+        }
+    }
+    
+    function validateTerms(){
+        var c=document.getElementById('autosave');
+        if (c.checked) {
+          return true;
+        } else { 
+          return false;
+        }
+    }
+    //End Sprint 3
+
+    function createDivExport(){
+        var divExport = document.createElement("dev");
+        divExport.id = "exportandimport"
+        getElementByXpath('//*[@id="viewport"]/div[4]').appendChild(divExport)
+        $("#exportandimport").html(`<div class="panel panel-default">
+            <div class="panel-body text-center">
+                <label for="changeTheme" class="btn btn-warning">
+                    <i class="fa fa-download"></i> Import Theme
+                </label>
+                <input style="display:none;" id="changeTheme" type="file" onchange="setForm()" accept=".json"/>
+                <button style="margin-left:20px;" class="btn btn-success" onclick="saveDataForm()"><i class="fa fa-upload"></i> Export Theme</button>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="autosave" checked>
+                    <label class="form-check-label" style="margin-top:10px;" for="autosave"> Auto save when imported</label>
+                  </div>
+            </div>
+          </div>`)
+    }
+	
+    
+
     $( document ).ready(function() {
-        if((window.location.href.search("themes") != -1) && (window.location.href.search("edit") != -1)){
+        if(((window.location.href.search("themes") != -1) && (window.location.href.search("edit") != -1)) || ((window.location.href.search("themes") != -1) && (window.location.href.search("create") != -1))){
             createUploads()
             createBr()
             createImgLogo()
@@ -187,9 +536,28 @@
             createBr()
             createBr()
             checkButtonClear()
+
+            createinputFile()
+            checkEmptyVal();
+        }
+
+        if(((window.location.href.search("themes") != -1) && (window.location.href.search("edit") != -1))){
+            createDivExport()
         }
     });
+
 </script>
+
+<style>
+    {% theme_stylesheet as csstheme %}
+    {{csstheme|safe}}
+</style>
+
+<script>
+    {% theme_javascript_data as jstheme %}
+    {{jstheme|safe}}
+</script>
+
 {% if appearance_type == 'plain' %}
     {% block content_plain %}{% endblock %}
 {% else %}

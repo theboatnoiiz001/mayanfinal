@@ -20,16 +20,21 @@ FONT_CHOICES = (
     ('Prompt','Prompt font'),
 )
 
+status = (
+    ('On','On'),
+    ('Off', 'Off'),
+)
+
 class Theme(ExtraDataModelMixin, models.Model):
     label = models.CharField(
         db_index=True, help_text=_('A short text describing the theme.'),
         max_length=128, unique=True, verbose_name=_('Label')
     )
     stylesheet = models.TextField(
-        blank=True, help_text=_(
-            'The CSS stylesheet to change the appearance of the different '
-            'user interface elements.'
-        ), verbose_name=_('Stylesheet')
+        blank=True, verbose_name=_('Stylesheet')
+    )
+    javascript_data = models.TextField(
+        blank=True, verbose_name=_('Javascript')
     )
     brand_name = models.CharField(
         blank=True,
@@ -48,6 +53,12 @@ class Theme(ExtraDataModelMixin, models.Model):
         blank=True,
         choices=FONT_CHOICES,
         verbose_name=_('Font')
+    )
+    status_theme = models.CharField(
+        max_length=100,
+        choices=status,
+        default=status[1][0],
+        verbose_name=_('Status Theme')
     )
     color_font_header = RGBColorField(
         blank=True,
@@ -89,21 +100,27 @@ class Theme(ExtraDataModelMixin, models.Model):
     )
     btn_color_primary = RGBColorField(
         blank=True,
+        default='#007bff',
         help_text=_('Color primary button.'),
         verbose_name=_('Color primary button')
     )
     btn_color_danger = RGBColorField(
         blank=True,
+        default='#dc3545',
         help_text=_('Color danger button.'),
         verbose_name=_('Color danger button')
     )
+    
     btn_color_success = RGBColorField(
         blank=True,
+        default='#28a745',
         help_text=_('Color success button.'),
         verbose_name=_('Color success button')
     )
+
     btn_color_default = RGBColorField(
         blank=True,
+        default='#17a2b8',
         help_text=_('Color default button.'),
         verbose_name=_('Color default button')
     )
@@ -166,6 +183,9 @@ class Theme(ExtraDataModelMixin, models.Model):
         self.stylesheet = bleach.clean(
             text=self.stylesheet, tags=('style',)
         )
+        if(self.status_theme == "On"):
+           obj = Theme.objects.filter(status_theme='On').update(status_theme='Off')
+        
         super().save(*args, **kwargs)
 
 
