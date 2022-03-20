@@ -91,7 +91,6 @@ def appearance_get_user_theme_stylesheet(user):
 
 @register.simple_tag
 def appearance_get_user_theme_script():
-    obj = Theme.objects.all().order_by('id')[:1][0]
     try:
         obj = Theme.objects.get(status_theme='On')
         context = obj.brand_name +  "|" + obj.logo_path + "|" + obj.color_font_header + "|" + obj.background_color_header + "|" + obj.background_color_menu + "|" + obj.background_color_header_panel + "|" + obj.background_website + "|" + obj.background_menu_dropdown + "|" + obj.btn_color_primary + "|" + obj.btn_color_danger + "|" + obj.btn_color_success + "|" + obj.btn_color_default + "|" + str(obj.font_size_header) + "|" + str(obj.font_size_menu) + "|" + str(obj.font_size_content_title)+ "|" + obj.menu_text_color
@@ -130,7 +129,6 @@ def get_fontraw():
 def get_font_link():
     try:
         obj = Theme.objects.get(status_theme='On')
-        obj = Theme.objects.all().order_by('id')[:1][0]
         if obj.font_other:
             fontname = obj.font_other
         else:
